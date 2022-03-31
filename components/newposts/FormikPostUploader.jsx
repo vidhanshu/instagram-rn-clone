@@ -15,38 +15,44 @@ import validUrl from "valid-url";
 /* importing firebase */
 import { firebase, db } from "../../firebase";
 
+
+/* schema for the uploading posts */
+
 const uploadPostSchema = yup.object().shape({
   name: yup.string().url("A URL is required").required("A URL is required"),
   caption: yup.string().max(220, "caption has reached the character limit"),
 });
 
+
+/* dummy page  */
 const PLACEHOLDER_URL =
   "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png";
 
 const FormikPostUploader = ({ navigation }) => {
   const [thumbnailUrl, setThumbnailUrl] = useState(PLACEHOLDER_URL);
-  const [currentLoggedInUser, setcurrentLoggedInUser] = useState(null);
+  const [currentLoggedInUser, setcurrentLoggedInUser] = useState({});
 
   const getUsername = () => {
-    
     const user = firebase.auth().currentUser;
+
     const unsubscribe = db
       .collection("users")
       .where("owner_uid", "==", user.uid)
       .limit(1)
-      .onSnapshot(snapshot =>
-        snapshot.docs.map(doc => {
+      .onSnapshot(
+        (snapshot) =>
           setcurrentLoggedInUser({
-            username: doc.data().username,
-            profilePicture: doc.data().profile_picture,
-          });
-        })
+            username: snapshot.docs[0].data().username,
+            profilePicture: snapshot.docs[0].data().profile_picture,
+          })
       );
+
     return unsubscribe;
   };
 
   useEffect(() => {
     getUsername();
+    console.log(currentLoggedInUser);
   }, []);
 
   const uploadPostToFireBase = (imageUrl, caption) => {
@@ -59,23 +65,22 @@ const FormikPostUploader = ({ navigation }) => {
         user: currentLoggedInUser.username,
         profile_picture: currentLoggedInUser.profilePicture,
         owner_uid: firebase.auth().currentUser.uid,
+        owner_email:firebase.auth().currentUser.email,
         caption: caption,
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        likes: 0,
         likes_by_users: [],
         comments: [],
       })
-      .then(() => {navigation.goBack();alert("apple")});
-      return unsubscribe
+      .then(() => {
+        navigation.goBack();
+      });
+    return unsubscribe;
   };
   return (
     <Formik
-      initialValues={{ caption: "", imgUrl: "" }}
-      onSubmit={(values) => {
-        uploadPostToFireBase(values.imgUrl, values.caption);
-      }}
       validationSchema={uploadPostSchema}
-      validateOnMount={true}
+      // validateOnMount={true}
+      initialValues={{ caption: "", imgUrl: "" }}
     >
       {({
         handleChange,
@@ -122,14 +127,20 @@ const FormikPostUploader = ({ navigation }) => {
           {errors.imgUrl && (
             <Text style={{ color: "red", padding: 10 }}>{errors.imgUrl}</Text>
           )}
-          <Button
+          <TouchableOpacity
+            style={styles.btn(validUrl.isUri(thumbnailUrl))}
+            // cz onSubmit isn't working
             onPress={() => {
-              handleSubmit();
-              navigation.navigate("Home");
+              uploadPostToFireBase(values.imgUrl, values.caption);
             }}
-            disabled={isValid}
-            title="share"
-          ></Button>
+            disabled={
+              validUrl.isUri(thumbnailUrl)
+                ? false
+                : true
+            }
+          >
+            <Text style={styles.text}>Share</Text>
+          </TouchableOpacity>
         </>
       )}
     </Formik>
@@ -141,7 +152,15 @@ const styles = StyleSheet.create({
     margin: 20,
     flexDirection: "row",
     alignItems: "flex-start",
+    padding: 20,
   },
+  btn: (isValid) => ({
+    backgroundColor: isValid ? "#3590F3" : "#D6D6D6",
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 5,
+  }),
+  text: { color: "white", fontWeight: "bold", textAlign: "center" },
   img: {
     width: 100,
     height: 100,

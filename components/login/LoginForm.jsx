@@ -28,7 +28,6 @@ const LoginForm = ({ navigation }) => {
     try {
       await firebase.auth().signInWithEmailAndPassword(email, password);
       console.log("Successfully logged in 🥳", email, password);
-      navigation.navigate("Home");
     } catch (error) {
       Alert.alert(
         "🔥 My lord...",

@@ -15,12 +15,11 @@ import {firebase,db} from "../firebase"
 
 const HomeScreen = ({ navigation }) => {
 
-  useEffect(()=>{
-    db.collectionGroup("posts").onSnapshot(snapshot=>{
-      console.log(snapshot.docs.map(doc=>doc.data()))
-    })
-
-  },[])
+  // useEffect(()=>{
+  //   db.collectionGroup("posts").onSnapshot(snapshot=>{
+  //     console.log(snapshot.docs.map(doc=>doc.data()))
+  //   })
+  // },[])
 
   return (
     <SafeAreaView style={styles.container}>
@@ -38,10 +37,11 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "black",
+    flex:1,
   },
   //fix-issue-of-not-able-to-see-last-post-comments
   scrollView: {
-    marginBottom: 110,
+    marginBottom: 50,
   },
   white: {
     color: "white",

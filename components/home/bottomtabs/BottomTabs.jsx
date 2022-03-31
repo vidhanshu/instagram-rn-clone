@@ -39,7 +39,7 @@ const BottomTabs = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    bottom: 65,
+    bottom: 0,
     backgroundColor: "black",
     zIndex: 1000,
     width: "100%",

@@ -1,14 +1,40 @@
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
-import React,{useState} from "react";
+import React, { useState } from "react";
 import PostLikeBar from "./PostLikeBar";
+import { db, firebase } from "../../../firebase";
+
 const PostFooter = ({ post }) => {
   const { likes, caption, user } = post;
+
+  const handleLike = () => {
+    const currentLikeStatus = !post.likes_by_users.includes(
+      firebase.auth().currentUser.email
+    );
+    db.collection("users")
+      .doc(post.owner_email)
+      .collection("posts")
+      .doc(post.id)
+      .update({
+        likes_by_users: currentLikeStatus
+          ? firebase.firestore.FieldValue.arrayUnion(
+              firebase.auth().currentUser.email
+            )
+          : firebase.firestore.FieldValue.arrayRemove(
+              firebase.auth().currentUser.email
+            ),
+      })
+      .then(() => {
+        console.log("Document successfully updated");
+      })
+      .catch((err) => alert(err.message));
+  };
+
   return (
     <View style={styles.container}>
-      <PostLikeBar />
-      <Text style={styles.likes}>{likes} likes</Text>
+      <PostLikeBar handleLike={handleLike} likeStatus={post.likes_by_users.includes(firebase.auth().currentUser.email)} />
+      <Text style={styles.likes}>{post.likes_by_users.length} likes</Text>
       <Caption caption={caption} user={user} />
-      <CommentsSection  post={post} />
+      <CommentsSection post={post} />
       <Comments post={post} />
     </View>
   );
@@ -40,11 +66,11 @@ const styles = StyleSheet.create({
   },
   CommentsSection: {
     color: "rgba(255,255,255,0.8)",
-    marginBottom:5
+    marginBottom: 5,
   },
-  Comments:{
-    marginBottom:5
-  }
+  Comments: {
+    marginBottom: 5,
+  },
 });
 
 const Caption = ({ user, caption }) => {
@@ -78,11 +104,11 @@ const CommentsSection = ({ post }) => {
 const Comments = ({ post }) => {
   return (
     <View style={styles.Comments}>
-      {post.comments.map((comment,idx) => (
-          <Text key={idx} style={{marginBottom:5}}>
-            <Text style={styles.user}>{comment.user} </Text>
-            <Text style={styles.caption_text}>{comment.comment}</Text>
-          </Text>
+      {post.comments.map((comment, idx) => (
+        <Text key={idx} style={{ marginBottom: 5 }}>
+          <Text style={styles.user}>{comment.user} </Text>
+          <Text style={styles.caption_text}>{comment.comment}</Text>
+        </Text>
       ))}
     </View>
   );

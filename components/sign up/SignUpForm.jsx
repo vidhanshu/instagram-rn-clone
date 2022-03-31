@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  ScrollView,
   Alert,
 } from "react-native";
 import { Formik } from "formik";
@@ -42,6 +41,7 @@ const SignUpForm = ({ navigation }) => {
         .auth()
         .createUserWithEmailAndPassword(email, password);
       console.log("Account Created successfully!");
+      
       db.collection("users")
         .doc(authUser.user.email)
         .set({

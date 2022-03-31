@@ -1,15 +1,17 @@
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import React from "react";
 
-const PostLikeContainer = () => {
+const PostLikeContainer = ({ handleLike, likeStatus }) => {
   return (
     <View style={styles.iconsContainer}>
       <View style={styles.likeContainer}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleLike}>
           <Image
             style={styles.icon}
             source={{
-              uri: "https://img.icons8.com/fluency-systems-regular/60/ffffff/like--v1.png",
+              uri: !likeStatus
+                ? "https://img.icons8.com/fluency-systems-regular/60/ffffff/like--v1.png"
+                : "https://img.icons8.com/color/344/filled-like.png",
             }}
           />
         </TouchableOpacity>

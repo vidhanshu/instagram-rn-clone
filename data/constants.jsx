@@ -66,7 +66,7 @@ export const STORIES = [
 //home screen posts along with comments and everything
 export const POSTS = [
   {
-    imageURL: STORIES[0].image,
+    imgUrl: STORIES[0].image,
     user: STORIES[0].user,
     likes: "8,000",
     caption:
@@ -84,7 +84,7 @@ export const POSTS = [
     ],
   },
   {
-    imageURL: STORIES[1].image,
+    imgUrl: STORIES[1].image,
     user: STORIES[1].user,
     likes: "7,900",
     caption: "Whatever is good for your soul, do that",
@@ -101,7 +101,7 @@ export const POSTS = [
     ],
   },
   {
-    imageURL: STORIES[2].image,
+    imgUrl: STORIES[2].image,
     user: STORIES[2].user,
     likes: "7,872",
     caption: "I’m not gonna sugar coat the truth, I’m not Willy Wonka",
@@ -118,7 +118,7 @@ export const POSTS = [
     ],
   },
   {
-    imageURL: STORIES[3].image,
+    imgUrl: STORIES[3].image,
     user: STORIES[3].user,
     likes: "7,873",
     caption: "Get out there and live a little",
