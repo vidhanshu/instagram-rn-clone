@@ -4,12 +4,19 @@ import PostLikeBar from "./PostLikeBar";
 import { db, firebase } from "../../../firebase";
 
 const PostFooter = ({ post }) => {
+  /* distructuring the post */
   const { likes, caption, user } = post;
 
+  /* for toggling the view all comments */
+  const [viewAllComments,setViewAllComments]= useState(false);
+
+  /* backend part : to handle the click by user */
   const handleLike = () => {
+    /* check if the current user has already liked the post or not */
     const currentLikeStatus = !post.likes_by_users.includes(
       firebase.auth().currentUser.email
     );
+    /* taking the array of "likes_by_users" in the database */
     db.collection("users")
       .doc(post.owner_email)
       .collection("posts")
@@ -32,10 +39,10 @@ const PostFooter = ({ post }) => {
   return (
     <View style={styles.container}>
       <PostLikeBar handleLike={handleLike} likeStatus={post.likes_by_users.includes(firebase.auth().currentUser.email)} />
-      <Text style={styles.likes}>{post.likes_by_users.length} likes</Text>
+      <Text style={styles.likes}>{post.likes_by_users.length} likes & created At {new Date(post.createdAt.seconds*1000).toDateString()}</Text>
       <Caption caption={caption} user={user} />
-      <CommentsSection post={post} />
-      <Comments post={post} />
+      <CommentsSection post={post} setViewAllComments={setViewAllComments}/>
+      {viewAllComments && <Comments post={post} />}
     </View>
   );
 };
@@ -70,6 +77,7 @@ const styles = StyleSheet.create({
   },
   Comments: {
     marginBottom: 5,
+    paddingHorizontal:10,
   },
 });
 
@@ -88,11 +96,11 @@ const Caption = ({ user, caption }) => {
 
 //in the conditional render dont write directly like this: post.comment.length bcz it will be 1 or 0 or any positive integer & since it is not inside "Text" component it will give an error so instead write complete comparison. or you can use double negation 🥳 like this :
 
-const CommentsSection = ({ post }) => {
+const CommentsSection = ({ post , setViewAllComments}) => {
   return (
     <>
       {!!post.comments.length && (
-        <Text style={styles.CommentsSection}>
+        <Text onPress={()=>setViewAllComments(p=>!p)} style={styles.CommentsSection}>
           View {post.comments.length > 1 ? "all" : null} {post.comments.length}{" "}
           {post.comments.length > 1 ? "comments" : "comment"}
         </Text>
@@ -104,10 +112,10 @@ const CommentsSection = ({ post }) => {
 const Comments = ({ post }) => {
   return (
     <View style={styles.Comments}>
-      {post.comments.map((comment, idx) => (
+      {post.comments.map((cmt, idx) => (
         <Text key={idx} style={{ marginBottom: 5 }}>
-          <Text style={styles.user}>{comment.user} </Text>
-          <Text style={styles.caption_text}>{comment.comment}</Text>
+          <Text style={styles.user}>{cmt.user} </Text>
+          <Text style={styles.caption_text}>{cmt.comment}</Text>
         </Text>
       ))}
     </View>

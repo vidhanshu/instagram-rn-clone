@@ -13,7 +13,7 @@ import * as yup from "yup";
 /* importing validator for validating email */
 import validator from "email-validator";
 /* importing firebase */
-import{ firebase} from "../../firebase";
+import { firebase } from "../../firebase";
 const LoginForm = ({ navigation }) => {
   /* schema for the validations */
   const LoginFormSchema = yup.object().shape({
